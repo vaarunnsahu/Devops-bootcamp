@@ -1,5 +1,5 @@
 # 366140438193.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:v1
-name: Build and Push Docker Image
+name: day3 Build-Push
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - 'day3/**' 
+      - '.github/workflows/build-push-day3.yml'
   workflow_dispatch:
 
 jobs:
