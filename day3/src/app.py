@@ -5,9 +5,9 @@ from datetime import datetime, timezone
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost:5432/postgres'   # running locally
 # postgres_link = 'postgresql://{user}:{password}@{host}:{port}/{database}'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@db:5432/mydb'   # with docker-compose
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@db:5432/mydb'   # with docker-compose
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password123@flask-db.cfykukwcw419.ap-south-1.rds.amazonaws.com:5432/mydb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password123@flask-db.cfykukwcw419.ap-south-1.rds.amazonaws.com:5432/mydb'
 
 # Initialize SQLAlchemy with app context
 db = SQLAlchemy()
