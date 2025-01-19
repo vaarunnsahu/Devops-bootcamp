@@ -101,33 +101,40 @@ This guide walks through deploying a containerized Flask application on AWS usin
 
 2. GitHub Actions Workflow
    ```yaml
-   name: Build and Push to ECR
-   
-   on:
-     push:
-       branches: [ main ]
-   
-   jobs:
-     deploy:
-       runs-on: ubuntu-latest
-       steps:
-         - uses: actions/checkout@v2
-         
-         - name: Configure AWS credentials
-           uses: aws-actions/configure-aws-credentials@v1
-           with:
-             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-             aws-region: ${{ secrets.AWS_REGION }}
-         
-         - name: Build and push
-           env:
-             ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-             ECR_REPOSITORY: my-flask-app
-             IMAGE_TAG: latest
-           run: |
-             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-             docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+name: day4 Build-Push
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'day3/**' 
+      - '.github/workflows/build-push-day3.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-south-1  # Replace with your AWS region
+
+    - name: Login to Amazon ECR
+      run: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 366140438193.dkr.ecr.ap-south-1.amazonaws.com
+    - name: Build, Tag, and Push Docker Image
+      run: |
+        cd day3/src
+        docker build -t 366140438193.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:day4 .
+        docker push 366140438193.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:day4
+
    ```
 
 ## ECS Deployment
