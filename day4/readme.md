@@ -1,48 +1,210 @@
-# deploying containerised flask app on aws with AWS UI
+# Deploying Containerized Flask App on AWS
 
-## Basic Network setup
-step1: Create a vpc with cidr block 10.0.0.0/16
-step2: create 2 private subnet (10.0.1.0/24, 10.0.2.0/24) and 2 public subnet (10.0.3.0/24, 10.0.4.0/24)
-step3: Create private and public  route tables and associate subnet to respective route tables
-step4: Create 1 internet gateway and attach it to vpc
-step5: create public route -> from anywhere to internet gateway
-step5: Create 2 nat gateway, 1 for each public subnet
-step6: Create private route from everywhere to nat gateway for outbound 
+This guide walks through deploying a containerized Flask application on AWS using ECS (Elastic Container Service) with application load balancer and RDS database.
 
-## Security group setup
-step1: 1 security group for alb -> inbound on port 80 and 443 (http and https) from everywhere
-step2: 1 security group for flask app (inbound on port 8000 as we run the app in this port) from alb securty group
-step3: 1 security group for rds -> inbound on port 5432 from flask app security group
+## Network Architecture Setup
 
-## rds
-step1: create 2 private subnets for rds with cidr (10.0.5.0/24, 10.0.6.0/24)
-step2: create a postgres rds -> no public visibility, give db name and user and password
-step3: Note down the details like db endpoint, username, password, db name, port
+### VPC and Subnet Configuration
+1. Create VPC
+   - CIDR block: `10.0.0.0/16`
+   - Enable DNS hostnames and DNS resolution
 
-# Create a ecr repo
-step1: create the ecr repo 
-step2: note down the detailss
-step3: build the ecr login command
+2. Create Subnets
+   - Private Subnets:
+     - Subnet 1: `10.0.1.0/24` (AZ-1)
+     - Subnet 2: `10.0.2.0/24` (AZ-2)
+   - Public Subnets:
+     - Subnet 1: `10.0.3.0/24` (AZ-1)
+     - Subnet 2: `10.0.4.0/24` (AZ-2)
 
-## containerise the app 
-step1:  setup the flask app, dockerfile, etc
-step2: write a github action to build and push the image to ecr
-step3: configure the secrets and build the image, ecr login and push to repo
+3. Route Tables
+   - Create separate route tables for public and private subnets
+   - Associate subnets with respective route tables
 
-## ECS deployment
-step1: create a ecs cluster
-step2: create a task definition  with the flask image, a cloud watch log group, ecs execution role(that has access to ecr)
-step3: create an ecs service using private subnet  pubic ip disabled, ecs security group
-step4: associate an alb while creating the ecs service that has a http listener on port 8000(as per the app) and target group
-step5: access the app using load baancer dns
+4. Internet Gateway
+   - Create and attach to VPC
+   - Add route in public route table: `0.0.0.0/0` → Internet Gateway
 
-## DNS 
-step1: register a domain
-step2: create public dns zone
-step3: create a route from the domain(or subdomain) to load balancer using alias config
-step4: test accessing the app with domain
-### ssl config
-step6: create a certificate with aws acm
-step7: Do the certificate validation with the domain
-step8: create a https listener 
-step9: access the app on domain name on https 
+5. NAT Gateways
+   - Create 2 NAT Gateways (one in each public subnet)
+   - Add routes in private route tables: `0.0.0.0/0` → NAT Gateway
+
+## Security Groups Configuration
+
+1. Application Load Balancer (ALB) Security Group
+   ```
+   Inbound Rules:
+   - HTTP (80) from 0.0.0.0/0
+   - HTTPS (443) from 0.0.0.0/0
+   ```
+
+2. Flask Application Security Group
+   ```
+   Inbound Rules:
+   - Port 8000 from ALB Security Group
+   ```
+
+3. RDS Security Group
+   ```
+   Inbound Rules:
+   - PostgreSQL (5432) from Flask App Security Group
+   ```
+
+## RDS Setup
+
+1. Create RDS Subnets
+   - Subnet 1: `10.0.5.0/24` (AZ-1)
+   - Subnet 2: `10.0.6.0/24` (AZ-2)
+
+2. PostgreSQL RDS Instance
+   - Engine: PostgreSQL
+   - Instance Configuration:
+     - Multi-AZ deployment
+     - Private subnet placement
+     - Security group attachment
+   - Note down:
+     - Endpoint
+     - Username
+     - Password
+     - Database name
+     - Port (5432)
+
+## Container Registry Setup
+
+1. Create ECR Repository
+   ```bash
+   aws ecr create-repository \
+       --repository-name my-flask-app \
+       --image-scanning-configuration scanOnPush=true
+   ```
+
+2. Authentication
+   ```bash
+   aws ecr get-login-password --region region | \
+   docker login --username AWS --password-stdin \
+   aws_account_id.dkr.ecr.region.amazonaws.com
+   ```
+
+## Application Containerization
+
+1. Application Structure:
+   ```
+   .
+   ├── app/
+   │   ├── __init__.py
+   │   ├── routes.py
+   │   └── models.py
+   ├── Dockerfile
+   ├── requirements.txt
+   └── wsgi.py
+   ```
+
+2. GitHub Actions Workflow
+   ```yaml
+   name: Build and Push to ECR
+   
+   on:
+     push:
+       branches: [ main ]
+   
+   jobs:
+     deploy:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v2
+         
+         - name: Configure AWS credentials
+           uses: aws-actions/configure-aws-credentials@v1
+           with:
+             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+             aws-region: ${{ secrets.AWS_REGION }}
+         
+         - name: Build and push
+           env:
+             ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+             ECR_REPOSITORY: my-flask-app
+             IMAGE_TAG: latest
+           run: |
+             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+             docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+   ```
+
+## ECS Deployment
+
+1. Create ECS Cluster
+   - Cluster type: Fargate
+   - VPC: Use created VPC
+
+2. Task Definition
+   - Launch type: Fargate
+   - Task role: ECS execution role with ECR access
+   - Container configuration:
+     - Image: ECR image URI
+     - Port mappings: 8000
+     - Environment variables:
+       - DATABASE_URL from AWS Secrets Manager
+     - Log configuration: CloudWatch logs
+
+3. ECS Service
+   - Launch type: Fargate
+   - Network configuration:
+     - VPC: Created VPC
+     - Subnets: Private subnets
+     - Security groups: Flask app security group
+   - Load balancer:
+     - Target group: Port 8000
+     - Health check path: /health
+
+## DNS and SSL Configuration
+
+1. Domain Setup
+   ```bash
+   # Create hosted zone
+   aws route53 create-hosted-zone \
+       --name example.com \
+       --caller-reference $(date +%s)
+   ```
+
+2. SSL Certificate
+   ```bash
+   # Request certificate
+   aws acm request-certificate \
+       --domain-name example.com \
+       --validation-method DNS
+   ```
+
+3. ALB Listener Configuration
+   - HTTP (80): Redirect to HTTPS
+   - HTTPS (443): Forward to target group
+
+4. Route53 Record
+   ```bash
+   # Create alias record
+   aws route53 change-resource-record-sets \
+       --hosted-zone-id HOSTED_ZONE_ID \
+       --change-batch '{
+           "Changes": [{
+               "Action": "CREATE",
+               "ResourceRecordSet": {
+                   "Name": "example.com",
+                   "Type": "A",
+                   "AliasTarget": {
+                       "HostedZoneId": "ALB_ZONE_ID",
+                       "DNSName": "ALB_DNS_NAME",
+                       "EvaluateTargetHealth": true
+                   }
+               }
+           }]
+       }'
+   ```
+
+## Verification
+- Access application: `https://example.com`
+- Monitor:
+  - ECS service status
+  - CloudWatch logs
+  - ALB target group health
+  - RDS metrics
+
+Would you like me to expand on any particular section?
