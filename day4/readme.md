@@ -101,39 +101,40 @@ This guide walks through deploying a containerized Flask application on AWS usin
 
 2. GitHub Actions Workflow
    ```yaml
-name: day4 Build-Push
+   # 366140438193.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:v1
+    name: day4 Build-Push
 
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'day3/**' 
-      - '.github/workflows/build-push-day3.yml'
-  workflow_dispatch:
+    on:
+    push:
+        branches:
+        - main
+        paths:
+        - 'day3/**' 
+        - '.github/workflows/build-push-day3.yml'
+    workflow_dispatch:
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+    jobs:
+    build:
+        runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+        steps:
+        - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1  # Replace with your AWS region
+        - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ap-south-1  # Replace with your AWS region
 
-    - name: Login to Amazon ECR
-      run: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 366140438193.dkr.ecr.ap-south-1.amazonaws.com
-    - name: Build, Tag, and Push Docker Image
-      run: |
-        cd day3/src
-        docker build -t 366140438193.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:day4 .
-        docker push 366140438193.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:day4
+        - name: Login to Amazon ECR
+        run: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 366140438193.dkr.ecr.ap-south-1.amazonaws.com
+        - name: Build, Tag, and Push Docker Image
+        run: |
+            cd day3/src
+            docker build -t 366140438193.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:day4 .
+            docker push 366140438193.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:day4
 
    ```
 
@@ -214,4 +215,3 @@ jobs:
   - ALB target group health
   - RDS metrics
 
-Would you like me to expand on any particular section?
