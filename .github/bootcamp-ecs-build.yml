@@ -1,5 +1,5 @@
 # 366140438193.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:day5
-name: day4 Build-Push
+name: bootcamp Build-Push
 
 on:
   push:
