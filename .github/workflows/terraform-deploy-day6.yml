@@ -7,6 +7,7 @@ on:
       - main
     paths:
     - 'day6/infra/**'
+    - '../../.github/workflows/terraform-deploy-day6.yml'
   # The workflow is manually triggered (disabled automatic trigger on push to the 'main' branch)
   workflow_dispatch:
   # 'workflow_dispatch' allows manually triggering the workflow from the GitHub Actions UI
@@ -46,6 +47,11 @@ jobs:
       - name: Terraform formatting check
         working-directory: ${{ env.TERRAFORM_PATH }}
         run: terraform fmt -check
+      - name: Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: ${{ env.TERRAFORM_PATH }}
+          # skip_check: CKV_AWS_2
 
       - name: Terraform Plan
         working-directory: ${{ env.TERRAFORM_PATH }}
