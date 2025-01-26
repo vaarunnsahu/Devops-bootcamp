@@ -46,7 +46,7 @@ resource "aws_ecs_service" "flask_app_service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.alb.arn
-    container_name   = var.flask_app_container_name
+    container_name   = var.app_name
     container_port   = 8000
   }
 
