@@ -20,12 +20,7 @@
         "appProtocol": "http"
       }
     ],
-    "secrets": [
-                {
-                    "name": "DATABASE_LINK",
-                    "valueFrom": "${db_link}"
-                }
-            ],
+ 
     "environment": [
       {
         "name": "ENV",
@@ -38,6 +33,10 @@
       {
         "name": "DB_HOST",
         "value": "${db_host}"
+      },
+      {
+        "name": "DB_link",
+        "value": "${db_link}"
       }
     ]
   }
