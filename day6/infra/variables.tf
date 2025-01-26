@@ -60,7 +60,7 @@ variable "flask_app_memory" {
   default     = 2048
 }
 
-variable "tag"{
+variable "tag" {
 }
 
 variable "desired_flask_task_count" {
@@ -71,7 +71,7 @@ variable "desired_flask_task_count" {
 
 variable "public_hosted_zone_id" {
   description = "The hosted zone id for the public domain"
-  default = "livingdevops.com"
+  default     = "livingdevops.com"
 }
 
 variable "domain_name" {

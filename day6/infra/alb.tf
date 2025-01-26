@@ -1,6 +1,6 @@
 resource "aws_lb" "alb" {
   name               = "${var.environment}-${var.app_name}-alb"
-  subnets            = [aws_subnet.public_1.id, aws_subnet.public_2.id]
+  subnets                 = [aws_subnet.public_1.id, aws_subnet.public_2.id]
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb.id]
 
@@ -41,7 +41,7 @@ resource "aws_lb_listener" "http_forward" {
 
 # # Create an HTTPS listener
 resource "aws_lb_listener" "https_forward" {
-  load_balancer_arn  = aws_lb.alb.arn
+  load_balancer_arn = aws_lb.alb.arn
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
