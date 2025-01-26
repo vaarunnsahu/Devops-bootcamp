@@ -73,3 +73,7 @@ variable "public_hosted_zone_id" {
   description = "The hosted zone id for the public domain"
   default = "livingdevops.com"
 }
+
+variable "domain_name" {
+  description = "The domain name for the application"
+}
