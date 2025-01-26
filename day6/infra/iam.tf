@@ -45,7 +45,7 @@ resource "aws_iam_role_policy" "ecs_task_execution_role" {
         "Resource": [
             "*"
         ]
-    },
+    }
   ]
 }
 

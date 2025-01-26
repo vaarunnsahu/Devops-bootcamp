@@ -8,7 +8,7 @@ resource "aws_ecs_cluster" "main" {
   name = "${var.environment}-${var.app_name}-cluster"
 }
 
-# ebuilding template
+#building template
 data "template_file" "services" {
   template = file(var.flask_app_template_file)
   vars     = local.flask_ecs_services_vars
