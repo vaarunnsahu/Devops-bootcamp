@@ -68,3 +68,8 @@ variable "desired_flask_task_count" {
   type        = number
   default     = 2
 }
+
+variable "public_hosted_zone_id" {
+  description = "The hosted zone id for the public domain"
+  default = "livingdevops.com"
+}

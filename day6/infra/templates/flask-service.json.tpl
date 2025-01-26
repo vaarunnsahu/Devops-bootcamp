@@ -35,7 +35,7 @@
         "value": "${db_host}"
       },
       {
-        "name": "DB_link",
+        "name": "DB_LINK",
         "value": "${db_link}"
       }
     ]
