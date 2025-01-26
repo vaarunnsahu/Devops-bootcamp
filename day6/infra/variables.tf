@@ -24,7 +24,6 @@ variable "environment" {
 }
 variable "prefix" {
   description = "The prefix for the resources"
-  default     = "bootcamp"
 }
 variable "app_name" {
   description = "The name of the application"
@@ -45,3 +44,18 @@ variable "db_default_settings" {
   }
 }
 
+variable "flask_app_template_file" {
+  description = "The path to the template file for the flask app"
+}
+
+variable "flask_app_cpu" {
+  description = "CPU units for the flask-app service"
+  type        = number
+  default     = 1024
+}
+
+variable "flask_app_memory" {
+  description = "Memory in MiB for the flask-app service"
+  type        = number
+  default     = 2048
+}

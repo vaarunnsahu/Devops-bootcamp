@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timezone
+import os
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost:5432/postgres'   # running locally
 # postgres_link = 'postgresql://{user}:{password}@{host}:{port}/{database}'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@db:5432/mydb'   # with docker-compose
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin123@bootcamp-rds.cfykukwcw419.ap-south-1.rds.amazonaws.com:5432/mydb'
-
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_LINK')   # with docker-compose
 # Initialize SQLAlchemy with app context
 db = SQLAlchemy()
 db.init_app(app)
