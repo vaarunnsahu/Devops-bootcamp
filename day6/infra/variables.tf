@@ -59,3 +59,12 @@ variable "flask_app_memory" {
   type        = number
   default     = 2048
 }
+
+variable "tag"{
+}
+
+variable "desired_flask_task_count" {
+  description = "The desired number of tasks for the flask-app service"
+  type        = number
+  default     = 2
+}
