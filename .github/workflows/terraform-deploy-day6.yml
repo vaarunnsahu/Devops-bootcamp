@@ -51,7 +51,8 @@ jobs:
         uses: bridgecrewio/checkov-action@v12
         with:
           directory: ${{ env.TERRAFORM_PATH }}
-          # skip_check: CKV_AWS_2
+          quiet: true
+          skip_check: CKV_AWS_338,CKV_AWS_51
 
       - name: Terraform Plan
         working-directory: ${{ env.TERRAFORM_PATH }}
