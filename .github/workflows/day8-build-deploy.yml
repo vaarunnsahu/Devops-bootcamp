@@ -2,8 +2,10 @@ name: "day8 prod build-deploy-ecs"
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+    # tags:
+    #   - 'v*'
   workflow_dispatch:
 
 env:
@@ -32,7 +34,7 @@ jobs:
       - name: Build docker container
         uses: docker/build-push-action@v6
         with:
-          file: "{{defaultContext}}:day8/day6/src/Dockerfile"  # Uncomment this line if you have a Dockerfile in a different location
+          file: day8/day6/src/Dockerfile"  # Uncomment this line if you have a Dockerfile in a different location
           tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
           build-args: APP_VERSION=${{ github.sha }}
           push: false
