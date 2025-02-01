@@ -1,5 +1,5 @@
 # 366140438193.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:v1
-name: day6 Build-Push docker
+name: day8 build
 
 on: 
   workflow_dispatch:
