@@ -54,12 +54,12 @@ jobs:
       #   working-directory: ${{ env.TERRAFORM_PATH }}
       #   run: terraform plan
 
-      - name: Terraform Apply
-        working-directory: ${{ env.TERRAFORM_PATH }}
-        run: terraform apply -var-file=vars/prod.tfvars  -auto-approve
+      # - name: Terraform Apply
+      #   working-directory: ${{ env.TERRAFORM_PATH }}
+      #   run: terraform apply -var-file=vars/prod.tfvars  -auto-approve
 
       ## Only when destroying 
 
-      # - name: terrafom destroy setup
-      #   working-directory: ${{ env.TERRAFORM_PATH }}
-      #   run: terraform destroy -var-file=vars/dev.tfvars -auto-approve
+      - name: terrafom destroy setup
+        working-directory: ${{ env.TERRAFORM_PATH }}
+        run: terraform destroy -var-file=vars/prod.tfvars -auto-approve
