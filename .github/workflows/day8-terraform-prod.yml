@@ -2,10 +2,9 @@ name: day8 terraform prod
 # This sets the name of the workflow to "Terraform Deploy"
 
 on:
-  tags:
-    - v*
-    paths:
-    - 'day8'
+  push:
+    tags:
+      - v*
   
   workflow_dispatch:
 
