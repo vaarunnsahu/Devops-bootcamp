@@ -10,9 +10,9 @@ on:
 
 env:
   IMAGE_NAME: "bootcamp-prod-2-tier-flask"
-  ECR_REGISTRY: "366122431293.dkr.ecr.ap-south-1.amazonaws.com"
+  ECR_REGISTRY: "366140438193.dkr.ecr.ap-south-1.amazonaws.com"
   ECR_REPOSITORY: "bootcamp-prod-2-tier-flask"
-  ACCOUNT_ID: "366122431293"
+  ACCOUNT_ID: "366140438193"
   ECS_CLUSTER: "prod-2-tier-flask-cluster"
   ECS_REGION: "ap-south-1"
   ECS_SERVICE: "prod-2-tier-flask-service"
