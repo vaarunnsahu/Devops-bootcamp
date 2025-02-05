@@ -1,0 +1,34 @@
+name: Build and push  #workflow-name
+
+on:   #Event- When we need to start the "execution" like Push,Pull or Issue
+  push:
+    branches:
+      - master
+    paths:
+      - day1/**
+  workflow_dispatch:  #Manual push
+
+jobs:  
+  build: #We can run multiple jobs in a workflow here; "Build" is the name for the "First job"
+    runs-on: ubuntu-latest #This build is going to run on ubuntu vm or a container; we can use windows or mac also 
+
+    steps:   #steps are the actions we are going to perform in this job      
+      - name: Checkout code #This is first step and followed by name. what we are going to do here we are copying local code to this container or vm
+        uses: actions/checkout@v2  #This is global actions which is created my github, we can use it without writing it
+
+      - name: Configure AWS credentials #step2 AWS credentials are required to push the image to ECR
+        uses: aws-actions/configure-aws-credentials@v1 #This is global actions which is created my github, we can use it without writing it
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} #We are using secrets here, we can't expose our credentials in public, so we are using secrets
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} #We are using secrets here, we can't expose our credentials in public, so we are using secrets
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR #step3 we are going to login to ECR to push the image to ECR  
+        run: |  #Pipe line symbol (|) for Multiple commands exectuition simultaneosuly and the key-word ( run ) used for exuecting command.
+          aws ecr get-login-password --region ap-south-1 | \ #This command is used to get the password for the ECR
+          docker login --username AWS --password-stdin 767398153139.dkr.ecr.ap-south-1.amazonaws.com/devops-bootcamp:latest #This command is used to login to ECR
+
+      - name: Build Docker image #step4 we are going to build the docker image here     
+        run: |
+          docker build -t 767398153139.dkr.ecr.ap-south-1.amazonaws.com/devops-bootcamp:latest #This command is used to build the docker image
+          docker push 767398153139.dkr.ecr.ap-south-1.amazonaws.com/devops-bootcamp:latest #This command is used to push the docker image to ECR
