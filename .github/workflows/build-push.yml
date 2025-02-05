@@ -26,7 +26,7 @@ jobs:
       - name: Login to Amazon ECR #step3 we are going to login to ECR to push the image to ECR  
         run: |  #Pipe line symbol (|) for Multiple commands exectuition simultaneosuly and the key-word ( run ) used for exuecting command.
           aws ecr get-login-password --region ap-south-1 | \ #This command is used to get the password for the ECR
-          docker login --username AWS --password-stdin 767398153139.dkr.ecr.ap-south-1.amazonaws.com/devops-bootcamp:latest #This command is used to login to ECR
+          docker login --username AWS --password-stdin 767398153139.dkr.ecr.ap-south-1.amazonaws.com #This command is used to login to ECR
 
       - name: Build Docker image #step4 we are going to build the docker image here     
         run: |
