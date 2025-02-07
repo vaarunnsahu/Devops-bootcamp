@@ -29,6 +29,6 @@ jobs:
     - name: Build, Tag, and Push Docker Image
       run: |
         cd day3/src
-        docker build -t 767398153139.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:day3 Devops-bootcamp/day3/src/ 
+        docker build -t 767398153139.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:day3 day3/src/ 
         docker push 767398153139.dkr.ecr.ap-south-1.amazonaws.com/bootcampflask:day3
         #updated
